@@ -1,1 +1,333 @@
+# AI 聊天应用 Android 客户端
+
+一个基于 Jetpack Compose 的现代化 Android 聊天应用，支持 AI 对话、图片生成、Agent 智能体等功能。
+
+## 📋 目录
+
+- [功能特性](#功能特性)
+- [技术栈](#技术栈)
+- [项目结构](#项目结构)
+- [快速开始](#快速开始)
+- [配置说明](#配置说明)
+- [开发指南](#开发指南)
+
+## ✨ 功能特性
+
+### 1. 用户认证
+- 用户注册和登录
+- Token 自动管理
+- 会话持久化
+
+### 2. AI 聊天功能
+- **流式显示**：实时显示 AI 回复内容
+- **Markdown 渲染**：支持 Markdown 格式的消息渲染
+- **图片上传**：支持从相册选择或拍照上传图片
+- **图片预览**：支持查看生成的图片和上传的图片
+- **深度思考显示**：支持显示 AI 的深度思考过程
+- **会话管理**：支持多会话管理，会话列表展示
+- **会话搜索**：支持搜索会话
+
+### 3. Agent 智能体系统
+- **Agent 列表**：展示用户创建的所有 Agent
+- **Agent 创建**：支持创建自定义 AI Agent
+- **Agent 聊天**：与 Agent 进行对话
+- **Agent 信息**：查看 Agent 详情
+- **批量消息**：支持批量发送消息给 Agent
+
+### 4. UI/UX 特性
+- **现代化设计**：采用 Material Design 3 设计规范
+- **响应式布局**：适配不同屏幕尺寸
+- **流畅动画**：流畅的页面切换和交互动画
+- **深色模式支持**：支持深色主题（如已实现）
+- **优化渲染**：优化的 Markdown 渲染性能
+
+## 🛠 技术栈
+
+- **开发语言**：Kotlin
+- **UI 框架**：Jetpack Compose
+- **架构模式**：MVVM（Model-View-ViewModel）
+- **网络请求**：Retrofit + OkHttp
+- **JSON 解析**：Gson
+- **异步处理**：Kotlin Coroutines + Flow
+- **依赖注入**：手动依赖注入（可升级为 Hilt/Koin）
+- **数据存储**：SharedPreferences（用于 Token 和配置）
+
+## 📁 项目结构
+
+```
+app/src/main/java/com/example/project1/
+├── MainActivity.kt              # 应用入口 Activity
+├── Navigation.kt               # 导航配置
+├── config/                     # 配置模块
+│   └── AppConfig.kt            # 应用配置（API 地址等）
+├── network/                    # 网络模块
+│   ├── ApiService.kt           # API 接口定义和数据模型
+│   ├── SessionManager.kt       # 会话管理（Token 存储）
+│   └── SSEParser.kt            # SSE 流式响应解析
+├── screens/                    # 界面模块
+│   ├── LoginScreen.kt          # 登录界面
+│   ├── RegisterScreen.kt       # 注册界面
+│   ├── HomeScreen.kt           # 主页
+│   ├── ChatScreen.kt           # 聊天界面
+│   ├── ConversationListScreen.kt # 会话列表界面
+│   ├── ConversationItem.kt     # 会话项组件
+│   ├── AgentListScreen.kt      # Agent 列表界面
+│   ├── AgentItem.kt            # Agent 项组件
+│   ├── AgentChatScreen.kt      # Agent 聊天界面
+│   ├── AgentInfoDialog.kt      # Agent 信息对话框
+│   ├── AgentCreateDialog.kt    # Agent 创建对话框
+│   ├── UserInfoDrawer.kt       # 用户信息抽屉
+│   └── SearchScreen.kt         # 搜索界面
+└── ui/                         # UI 组件模块
+    ├── theme/                  # 主题配置
+    │   ├── Color.kt            # 颜色定义
+    │   ├── Type.kt             # 字体定义
+    │   ├── Theme.kt            # 主题配置
+    │   └── Spacing.kt          # 间距定义
+    ├── MarkdownRenderer.kt     # Markdown 渲染器
+    ├── OptimizedMarkdownRenderer.kt # 优化的 Markdown 渲染器
+    └── ImagePreviewDialog.kt   # 图片预览对话框
+```
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Android Studio Hedgehog | 2023.1.1 或更高版本
+- JDK 17 或更高版本
+- Android SDK API 24+（最低支持 Android 7.0）
+- Gradle 8.0+
+
+### 安装步骤
+
+1. **克隆项目**（如果适用）
+
+2. **打开项目**
+
+   使用 Android Studio 打开项目根目录。
+
+3. **配置 API 地址**
+
+   在 `AppConfig.kt` 中配置后端 API 地址：
+
+   ```kotlin
+   private const val DEFAULT_PHONE_URL = "http://192.168.2.131:8000/"  // 修改为你的服务器地址
+   ```
+
+   或者在应用运行时通过设置界面配置（如果已实现）。
+
+4. **同步依赖**
+
+   Android Studio 会自动同步 Gradle 依赖。如果未自动同步，点击 "Sync Now"。
+
+5. **运行应用**
+
+   - 连接 Android 设备或启动模拟器
+   - 点击 "Run" 按钮或按 `Shift+F10`
+   - 选择目标设备
+   - 应用将自动安装并启动
+
+### 构建配置
+
+项目使用 Gradle Version Catalog (`gradle/libs.versions.toml`) 管理依赖版本。
+
+主要依赖包括：
+- Jetpack Compose
+- Retrofit
+- OkHttp
+- Gson
+- Kotlin Coroutines
+
+## ⚙️ 配置说明
+
+### API 服务器地址配置
+
+应用支持三种方式配置 API 服务器地址：
+
+1. **默认配置**：在 `AppConfig.kt` 中设置默认地址
+2. **SharedPreferences**：应用运行时保存的地址（优先级更高）
+3. **BuildConfig**：通过构建配置设置（如果已实现）
+
+**模拟器访问本机**：
+```
+http://10.0.2.2:8000/
+```
+
+**真机访问局域网**：
+```
+http://<你的电脑IP地址>:8000/
+```
+
+### 网络配置
+
+在 `ApiService.kt` 中配置了网络拦截器，用于：
+- 自动添加 Token 到请求头
+- 日志记录（开发环境）
+- 超时设置
+
+### Token 管理
+
+Token 通过 `SessionManager` 管理：
+- 登录后自动保存 Token
+- 请求时自动添加到请求头
+- 支持清除 Token（登出）
+
+## 🔧 开发指南
+
+### 添加新界面
+
+1. 在 `screens/` 目录下创建新的 Composable 函数
+2. 在 `Navigation.kt` 中添加路由配置
+3. 在相应界面中添加导航逻辑
+
+### 添加新 API
+
+1. 在 `ApiService.kt` 中定义新的接口方法
+2. 定义对应的数据模型（Request/Response）
+3. 在相应的 ViewModel 或 Screen 中调用
+
+### 网络请求示例
+
+```kotlin
+// 在 ViewModel 或 Screen 中
+val apiService = // 获取 ApiService 实例
+
+viewModelScope.launch {
+    try {
+        val response = apiService.createSession(request)
+        // 处理响应
+    } catch (e: Exception) {
+        // 处理错误
+    }
+}
+```
+
+### SSE 流式响应处理
+
+使用 `SSEParser` 解析 SSE 流：
+
+```kotlin
+val eventSource = EventSource.Builder(apiService.createSessionStream(request))
+    .build()
+
+eventSource.onEvent { event ->
+    when (event.name) {
+        "chunk" -> {
+            // 处理文本块
+        }
+        "reasoning" -> {
+            // 处理深度思考内容
+        }
+        "complete" -> {
+            // 处理完成事件
+        }
+    }
+}
+```
+
+### UI 主题定制
+
+在 `ui/theme/` 目录下修改：
+- `Color.kt`：颜色定义
+- `Type.kt`：字体定义
+- `Theme.kt`：主题配置
+- `Spacing.kt`：间距定义
+
+### Markdown 渲染
+
+使用 `OptimizedMarkdownRenderer` 渲染 Markdown 内容：
+
+```kotlin
+OptimizedMarkdownRenderer(
+    content = message.content,
+    modifier = Modifier.fillMaxWidth()
+)
+```
+
+## 📱 功能说明
+
+### 登录/注册
+
+- 输入用户名和密码
+- 注册新用户或登录已有账户
+- 登录成功后自动保存 Token
+
+### 聊天界面
+
+- 输入消息并发送
+- 支持上传图片（相册或拍照）
+- 实时显示 AI 回复（流式）
+- 支持显示深度思考过程
+- 支持查看生成的图片
+
+### 会话管理
+
+- 查看所有会话列表
+- 创建新会话
+- 删除会话
+- 搜索会话
+- 更新会话标题
+
+### Agent 功能
+
+- 查看 Agent 列表
+- 创建新 Agent（设置名称和初始 Prompt）
+- 与 Agent 对话
+- 查看 Agent 信息
+- 批量发送消息给 Agent
+
+## 🐛 常见问题
+
+### 1. 无法连接到服务器
+
+- 检查服务器地址配置是否正确
+- 确保服务器正在运行
+- 检查网络连接（真机需要与服务器在同一局域网）
+- 检查防火墙设置
+
+### 2. Token 过期
+
+- 重新登录获取新 Token
+- 检查 Token 有效期配置
+
+### 3. 图片上传失败
+
+- 检查图片大小限制
+- 确保有存储权限
+- 检查网络连接
+
+### 4. SSE 流式响应中断
+
+- 检查网络稳定性
+- 查看服务器日志
+- 检查超时设置
+
+## 📝 注意事项
+
+1. **网络权限**：确保在 `AndroidManifest.xml` 中声明了网络权限
+2. **存储权限**：上传图片需要存储权限（Android 10+ 需要特殊处理）
+3. **HTTPS**：生产环境建议使用 HTTPS
+4. **Token 安全**：Token 存储在 SharedPreferences 中，生产环境可以考虑加密存储
+5. **性能优化**：
+   - 大量消息时考虑分页加载
+   - 图片加载使用图片加载库（如 Coil）
+   - Markdown 渲染优化（已实现 OptimizedMarkdownRenderer）
+
+## 🔄 更新日志
+
+### v1.0.0
+- 初始版本
+- 支持用户认证
+- 支持 AI 聊天
+- 支持 Agent 功能
+- 支持图片上传和生成
+
+## 📄 许可证
+
+[根据实际情况填写]
+
+## 👥 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
 
