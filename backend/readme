@@ -1,1 +1,308 @@
+# AI 聊天应用后端
+
+一个基于 FastAPI 的智能聊天应用后端，支持 AI 对话、图片生成、Agent 智能体等功能。
+
+## 📋 目录
+
+- [功能特性](#功能特性)
+- [技术栈](#技术栈)
+- [项目结构](#项目结构)
+- [快速开始](#快速开始)
+- [API 文档](#api-文档)
+- [配置说明](#配置说明)
+- [开发指南](#开发指南)
+
+## ✨ 功能特性
+
+### 1. 用户认证
+- 用户注册和登录
+- JWT Token 认证
+- 密码加密存储
+
+### 2. AI 聊天功能
+- **流式响应**：支持 Server-Sent Events (SSE) 流式输出
+- **深度思考**：支持 AI 模型的深度思考能力（reasoning）
+- **图片上传**：支持用户上传图片进行视觉分析
+- **图片生成**：支持文本生成图片、以图生图、图片修改等功能
+- **意图识别**：自动识别用户意图（文件解析、图片生成、普通对话）
+- **会话管理**：支持多会话管理，每个会话包含完整的对话历史
+
+### 3. Agent 智能体系统
+- **Agent 创建**：用户可以创建自定义的 AI Agent
+- **记忆管理**：自动总结聊天历史，形成长期记忆
+- **知识库检索**：支持按日期、关键词检索 Agent 的知识库
+- **Prompt 历史**：记录 Prompt 的演进过程，支持删除最新总结
+- **批量消息处理**：支持批量发送消息，AI 可以按顺序延迟回复
+
+### 4. 数据库模型
+- **用户模型**：用户基本信息
+- **聊天会话模型**：会话标题、创建时间等
+- **聊天消息模型**：消息内容、角色、图片、深度思考内容等
+- **Agent 模型**：Agent 基本信息、Prompt 等
+- **Agent 会话模型**：Agent 的聊天会话（单会话模式）
+- **Agent 消息模型**：Agent 的聊天消息，支持批次管理
+- **Prompt 历史模型**：记录 Prompt 的演进
+- **知识库索引模型**：建立总结内容与日期的索引关系
+
+## 🛠 技术栈
+
+- **框架**：FastAPI
+- **数据库**：SQLite（可配置为 PostgreSQL/MySQL）
+- **ORM**：SQLAlchemy
+- **认证**：JWT (JSON Web Token)
+- **AI 服务**：豆包 API（支持 Chat、图片生成等）
+- **异步支持**：支持流式响应（SSE）
+
+## 📁 项目结构
+
+```
+backend/app/
+├── main.py                 # FastAPI 应用入口
+├── run_server.py          # 服务器启动脚本
+├── config/                # 配置模块
+│   └── settings.py        # 应用配置
+├── database/              # 数据库模块
+│   └── session.py         # 数据库会话管理
+├── models/                # 数据模型
+│   ├── user.py           # 用户模型
+│   ├── chat.py           # 聊天模型
+│   └── agent.py          # Agent 模型
+├── auth/                  # 认证模块
+│   ├── routes.py         # 认证路由
+│   ├── service.py        # 认证服务
+│   ├── schemas.py        # 认证数据模式
+│   └── deps.py           # 依赖注入
+├── ai/                    # AI 功能模块
+│   ├── routes.py         # AI 路由
+│   ├── service.py        # AI 服务
+│   ├── client.py         # AI 客户端
+│   ├── intent_detector.py # 意图识别
+│   └── image_generator.py # 图片生成
+├── chat/                  # 聊天模块
+│   ├── routes.py         # 聊天路由
+│   ├── service.py        # 聊天服务
+│   └── schemas.py        # 聊天数据模式
+├── agents/                # Agent 模块
+│   ├── routes.py         # Agent 路由
+│   ├── service.py        # Agent 服务
+│   ├── schemas.py        # Agent 数据模式
+│   ├── agent_t.py        # Agent 核心逻辑
+│   ├── intent_detector.py # Agent 意图识别
+│   └── knowledge_index.py # 知识库检索
+└── utils/                 # 工具模块
+    └── security.py       # 安全工具（密码加密、Token 生成）
+```
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Python 3.8+
+- pip 或 conda
+
+### 安装步骤
+
+1. **克隆项目**（如果适用）
+
+2. **安装依赖**
+
+```bash
+pip install -r requirements.txt
+```
+
+主要依赖包括：
+- `fastapi`
+- `uvicorn`
+- `sqlalchemy`
+- `pydantic`
+- `python-jose[cryptography]`
+- `passlib[bcrypt]`
+- `python-multipart`
+
+3. **配置环境变量**
+
+创建 `.env` 文件（可选，会覆盖默认配置）：
+
+```env
+SECRET_KEY=your_secret_key_here
+SQLALCHEMY_DATABASE_URL=sqlite:///./chatbot.db
+ACCESS_TOKEN_EXPIRE_MINUTES=10080
+```
+
+4. **配置 AI API**
+
+在 `ai/client.py` 中配置你的 AI API Key 和 Base URL。
+
+5. **启动服务器**
+
+```bash
+# 使用默认配置（localhost:8000）
+python run_server.py
+
+# 允许局域网访问
+python run_server.py --host 0.0.0.0 --port 8000
+
+# 开发模式（自动重载）
+python run_server.py --reload
+```
+
+或者使用 uvicorn 直接启动：
+
+```bash
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+6. **访问 API 文档**
+
+启动后访问：
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+## 📚 API 文档
+
+### 认证 API (`/auth`)
+
+- `POST /auth/register` - 用户注册
+- `POST /auth/login` - 用户登录
+- `GET /auth/me` - 获取当前用户信息
+
+### AI API (`/ai`)
+
+- `POST /ai/ask` - 单次 AI 问答（非流式）
+- `POST /ai/ask/stream` - 流式 AI 问答（SSE）
+
+### 聊天 API (`/chat`)
+
+- `GET /chat/sessions` - 获取会话列表
+- `POST /chat/sessions` - 创建新会话并发送首条消息
+- `POST /chat/sessions/stream` - 创建会话并流式返回
+- `GET /chat/sessions/{session_id}/messages` - 获取会话消息
+- `POST /chat/sessions/{session_id}/messages` - 在会话中发送消息
+- `POST /chat/sessions/{session_id}/messages/stream` - 流式发送消息
+- `PUT /chat/sessions/{session_id}` - 更新会话标题
+- `DELETE /chat/sessions/{session_id}` - 删除会话
+
+### Agent API (`/agents`)
+
+- `GET /agents/` - 获取 Agent 列表
+- `POST /agents/` - 创建新 Agent
+- `GET /agents/{agent_id}` - 获取 Agent 详情
+- `PUT /agents/{agent_id}` - 更新 Agent 名称
+- `DELETE /agents/{agent_id}` - 删除 Agent
+- `GET /agents/{agent_id}/chat` - 获取 Agent 聊天会话
+- `POST /agents/{agent_id}/chat/messages/batch` - 批量发送消息
+- `GET /agents/{agent_id}/prompt-history` - 获取 Prompt 历史
+- `DELETE /agents/{agent_id}/prompt-history/latest` - 删除最新 Prompt 总结
+- `GET /agents/{agent_id}/knowledge/search` - 检索知识库
+- `GET /agents/{agent_id}/knowledge` - 获取知识库索引
+- `POST /agents/{agent_id}/chat/clear-and-summarize` - 清空聊天并总结记忆
+
+## ⚙️ 配置说明
+
+### 数据库配置
+
+默认使用 SQLite，数据库文件路径在 `config/settings.py` 中配置：
+
+```python
+SQLALCHEMY_DATABASE_URL = "sqlite:///E:/PythonProject2/chatbot.db"
+```
+
+可以修改为 PostgreSQL 或 MySQL：
+
+```python
+# PostgreSQL
+SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/dbname"
+
+# MySQL
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://user:password@localhost/dbname"
+```
+
+### JWT 配置
+
+在 `config/settings.py` 中配置：
+
+```python
+SECRET_KEY = "your_secret_key_here"  # 生产环境务必使用随机长字符串
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # Token 有效期：7天
+```
+
+### CORS 配置
+
+在 `main.py` 中配置 CORS，当前设置为允许所有来源（开发环境）：
+
+```python
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+生产环境应限制允许的来源。
+
+## 🔧 开发指南
+
+### 数据库迁移
+
+项目使用 SQLAlchemy 的自动建表功能。首次运行时，会自动创建所有表：
+
+```python
+Base.metadata.create_all(bind=engine)
+```
+
+### 添加新功能
+
+1. **添加新模型**：在 `models/` 目录下创建新的模型文件
+2. **添加新路由**：在相应的模块下创建 `routes.py` 或添加到现有路由文件
+3. **添加新服务**：在相应的模块下创建 `service.py` 或添加到现有服务文件
+4. **定义数据模式**：在相应的模块下创建 `schemas.py` 或添加到现有模式文件
+
+### 日志配置
+
+项目使用 Python 标准库 `logging` 模块。日志级别可以在代码中配置：
+
+```python
+logging.basicConfig(level=logging.DEBUG)
+```
+
+### 测试
+
+可以创建测试文件进行功能测试：
+
+```bash
+python test.py
+```
+
+## 📝 注意事项
+
+1. **生产环境配置**：
+   - 务必修改 `SECRET_KEY` 为随机长字符串
+   - 配置合适的 CORS 策略
+   - 使用生产级数据库（PostgreSQL/MySQL）
+   - 配置 HTTPS
+
+2. **API Key 安全**：
+   - 不要在代码中硬编码 API Key
+   - 使用环境变量或配置文件管理敏感信息
+
+3. **数据库备份**：
+   - 定期备份数据库文件
+   - 生产环境建议使用数据库备份工具
+
+4. **性能优化**：
+   - 对于大量数据，考虑添加数据库索引
+   - 流式响应可以减少内存占用
+   - 考虑使用 Redis 缓存
+
+## 📄 许可证
+
+[根据实际情况填写]
+
+## 👥 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+
 
